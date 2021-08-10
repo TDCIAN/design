@@ -1,34 +1,55 @@
 package com.company.design;
 
 import com.company.design.adapter.*;
+import com.company.design.aop.AopBrowser;
+import com.company.design.proxy.Browser;
+import com.company.design.proxy.BrowserProxy;
+import com.company.design.proxy.IBrowser;
 import com.company.design.singleton.AClazz;
 import com.company.design.singleton.BClazz;
 import com.company.design.singleton.SocketClient;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
 
     public static void main(String[] args) {
         /*
-        AClazz aClazz = new AClazz();
-        BClazz bClazz = new BClazz();
+        Browser browser = new Browser("www.naver.com");
+        browser.show();
+        browser.show();
+        browser.show();
+        browser.show();
 
-        SocketClient aClient = aClazz.getSocketClient();
-        SocketClient bClient = bClazz.getSocketClient();
 
-        System.out.println("두개의 객체가 동일한가?");
-        System.out.println(aClient.equals(bClient));
+        IBrowser browser = new BrowserProxy("www.naver.com");
+        browser.show();
+        browser.show();
+        browser.show();
+        browser.show();
+        browser.show();
         */
 
-        HairDryer hairDryer = new HairDryer();
-        connect(hairDryer);
+        AtomicLong start = new AtomicLong();
+        AtomicLong end = new AtomicLong();
 
-        Cleaner cleaner = new Cleaner();
-        Electronic110V adapter = new SocketAdapter(cleaner);
-        connect(adapter);
 
-        AirConditioner airConditioner = new AirConditioner();
-        Electronic110V airAdapter = new SocketAdapter(airConditioner);
-        connect(airAdapter);
+        IBrowser aopBrowser = new AopBrowser("www.naver.com",
+                ()->{
+                    System.out.println("before");
+                    start.set(System.currentTimeMillis());
+                },
+                ()->{
+                    long now = System.currentTimeMillis();
+                    end.set(now - start.get());
+                }
+        );
+
+        aopBrowser.show();
+        System.out.println("first loading time: "+end.get());
+
+        aopBrowser.show();
+        System.out.println("second loading time: "+end.get());
     }
 
     // 콘센트
